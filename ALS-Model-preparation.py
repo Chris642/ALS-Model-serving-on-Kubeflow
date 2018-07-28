@@ -25,7 +25,7 @@ if sys.version >= '3':
     long = int
 
 from pyspark.sql import SparkSession
-
+import numpy as np
 from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.ml.recommendation import ALS
 from pyspark.sql import Row
@@ -58,15 +58,16 @@ if __name__ == "__main__":
     rmse = evaluator.evaluate(predictions)
     print("Root-mean-square error = " + str(rmse))
 
+    #print(np.asarray([x[1] for x in model.userFactors.collect()]))
+    userfactorinoinnp = np.asarray([x[1] for x in model.userFactors.collect()])
+    itemfactorinoinnp = np.asarray([x[1] for x in model.itemFactors.collect()])
+    filename = 'ALSItem'
+    outfile = open(filename, 'wb')
+    pickle.dump(itemfactorinoinnp, outfile)
+    outfile.close()
+    filename = 'ALSUser'
+    outfile = open(filename, 'wb')
+    pickle.dump(userfactorinoinnp, outfile)
 
-   # filename = 'ALSItem'
-   # outfile = open(filename, 'wb')
-   # pickle.dump(model.itemFactors.collect(), outfile)
-   # outfile.close()
-    #filename = 'ALSUser'
-    #outfile = open(filename, 'wb')
-    #pickle.dump(model.userFactors.collect(), outfile)
-
-    model.save("ALSModel")
-
+    #model.save("ALSModel")
     spark.stop()
